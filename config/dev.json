@@ -1,0 +1,9 @@
+{
+  "api": {
+    "port": 3000,
+    "uri": ""
+  },
+  "mongodb": {
+    "uri": "mongodb://121.40.92.176:27017/moral_db"
+  }
+}
