@@ -1,2 +1,7 @@
 ::1 - - [19/Jun/2016:14:44:54 +0000] "GET / HTTP/1.1" 500 46 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
 ::1 - - [19/Jun/2016:14:45:31 +0000] "GET / HTTP/1.1" 200 105 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
+::1 - - [19/Jun/2016:15:24:32 +0000] "GET / HTTP/1.1" 200 16 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
+::1 - - [19/Jun/2016:15:25:54 +0000] "GET / HTTP/1.1" 304 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
+::1 - - [19/Jun/2016:15:30:52 +0000] "GET / HTTP/1.1" 304 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
+[0mGET / [36m304 [0m3.777 ms - -[0m
+[0mGET / [36m304 [0m0.996 ms - -[0m
