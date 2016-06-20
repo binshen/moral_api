@@ -2,11 +2,11 @@
  * Created by bin.shen on 6/20/16.
  */
 
-var User = require('../models/User');
 var Common = require('../utils/common');
 
 module.exports = function (app, mongoose, config) {
     var User = mongoose.model('User');
+    var Device = mongoose.model('Device');
 
     app.post('/user/login',function(req, res, next) {
         var username = req.body.username;
@@ -55,6 +55,29 @@ module.exports = function (app, mongoose, config) {
                 return res.status(200).json({ success:true });
             });
         });
+    });
 
+    app.post('/user/add_device', function(req, res, next) {
+        var userID = req.body.userID;
+        var mac = req.body.mac;
+        Device.findOne({mac: mac}, function(err, doc) {
+            if(doc == null) {
+                doc = new Device({ mac: mac, userID: userID });
+                doc.save(function(err) {
+                    if(err) return next(err);
+                    return res.status(200).json({ success:true, status: 1 });
+                });
+            } else {
+                if(doc.userID == null) {
+                    doc.userID = userID;
+                    doc.save(function(err) {
+                        if(err) return next(err);
+                        return res.status(200).json({ success:true, status: 2 });
+                    });
+                } else {
+                    return res.status(200).json({ success:true, status: 3 });
+                }
+            }
+        });
     });
 };
