@@ -6,6 +6,15 @@ var Common = require('../utils/common');
 
 module.exports = function (app, mongoose, config) {
     var User = mongoose.model('User');
+    var Device = mongoose.model('Device');
+
+    app.get('/test/c',function(req, res, next) {
+        var userID = "5766a035f08504e7cd3fb33e";
+        Device.find({ userID: userID }, function(err, doc) {
+            if(err) return next(err);
+            return res.status(200).json(doc);
+        });
+    });
 
     app.get('/test/b', function(req, res, next) {
         var userID = "5766a035f08504e7cd3fb33e";
@@ -24,8 +33,10 @@ module.exports = function (app, mongoose, config) {
                         if(err) return next(err);
                         return res.status(200).json({ success:true, status: 2 });
                     });
-                } else {
+                } else if(doc.userID == userID) {
                     return res.status(200).json({ success:true, status: 3 });
+                } else {
+                    return res.status(200).json({ success:true, status: 4 });
                 }
             }
         });
