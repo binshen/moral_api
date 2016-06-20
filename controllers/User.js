@@ -1,16 +1,11 @@
 /**
- * Created by bin.shen on 6/19/16.
+ * Created by bin.shen on 6/20/16.
  */
 
 var crypto = require('crypto');
 var User = require('../models/User');
 
 module.exports = function (app, mongoose, config) {
-    var User = mongoose.model('User');
-
-    app.get('/', function(req, res, next) {
-        return res.status(200).json({ success:true });
-    });
 
     app.post('/user/login',function(req, res, next) {
         var username = req.body.username;
@@ -22,5 +17,17 @@ module.exports = function (app, mongoose, config) {
                 user: user
             });
         });
+    });
+
+    app.get('/user/logout', function(req, res, next) {
+        return res.status(200).json({ success:true });
+    });
+
+    app.post('/user/register', function(req, res, next) {
+        return res.status(200).json({ success:true });
+    });
+
+    app.post('/user/forget_psw', function(req, res, next) {
+        return res.status(200).json({ success:true });
     });
 };
