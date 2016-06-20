@@ -6,6 +6,12 @@ var crypto = require('crypto');
 var User = require('../models/User');
 
 module.exports = function (app, mongoose, config) {
+    var User = mongoose.model('User');
+
+    app.get('/test', function(req, res, next) {
+        console.log(User)
+        return res.status(200).json({ success:true });
+    });
 
     app.post('/user/login',function(req, res, next) {
         var username = req.body.username;
