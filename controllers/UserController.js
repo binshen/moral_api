@@ -80,4 +80,12 @@ module.exports = function (app, mongoose, config) {
             }
         });
     });
+
+    app.get('/user/:user/get_device',function(req, res, next) {
+        var userID = req.params.user;
+        Device.find({ userID: userID }, function(err, doc) {
+            if(err) return next(err);
+            return res.status(200).json(doc);
+        });
+    });
 };
