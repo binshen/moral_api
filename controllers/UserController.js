@@ -94,7 +94,7 @@ module.exports = function (app, mongoose, config) {
         var userID = req.params.user;
         var deviceID = req.params.device;
         var deviceName = req.body.name;
-        Device.find({ userID: userID, _id: deviceID }, function(err, doc) {
+        Device.findOne({ userID: userID, _id: deviceID }, function(err, doc) {
             if(err) return next(err);
             if(doc == null) {
                 return res.status(400).json({ success:false, error:"指定的设备不存在" });

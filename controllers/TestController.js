@@ -8,6 +8,23 @@ module.exports = function (app, mongoose, config) {
     var User = mongoose.model('User');
     var Device = mongoose.model('Device');
 
+    app.get('/test/update_name',function(req, res, next) {
+        var userID = "5766a035f08504e7cd3fb33e";
+        var deviceID = "5763c01ffc3b879a1b718fde";
+        var deviceName = "test123";
+        Device.findOne({ userID: userID, _id: deviceID }, function(err, doc) {
+            if(err) return next(err);
+            if(doc == null) {
+                return res.status(400).json({ success:false, error:"指定的设备不存在" });
+            }
+            doc.name = deviceName;
+            doc.save(function(err) {
+                if(err) return next(err);
+                return res.status(200).json({ success:true });
+            });
+        });
+    });
+
     app.get('/test/c',function(req, res, next) {
         var userID = "5766a035f08504e7cd3fb33e";
         Device.find({ userID: userID }, function(err, doc) {
