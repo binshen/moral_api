@@ -61,6 +61,7 @@ module.exports = function (app, mongoose, config) {
         var userID = req.body.userID;
         var mac = req.body.mac;
         Device.findOne({mac: mac}, function(err, doc) {
+            if(err) return next(err);
             if(doc == null) {
                 doc = new Device({ mac: mac, userID: userID });
                 doc.save(function(err) {
@@ -86,6 +87,23 @@ module.exports = function (app, mongoose, config) {
         Device.find({ userID: userID }, function(err, doc) {
             if(err) return next(err);
             return res.status(200).json(doc);
+        });
+    });
+
+    app.post('/user/:user/device/:device/update_name',function(req, res, next) {
+        var userID = req.params.user;
+        var deviceID = req.params.device;
+        var deviceName = req.body.name;
+        Device.find({ userID: userID, _id: deviceID }, function(err, doc) {
+            if(err) return next(err);
+            if(doc == null) {
+                return res.status(400).json({ success:false, error:"指定的设备不存在" });
+            }
+            doc.name = deviceName;
+            doc.save(function(err) {
+                if(err) return next(err);
+                return res.status(200).json({ success:true });
+            });
         });
     });
 };
