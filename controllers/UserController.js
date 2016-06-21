@@ -106,4 +106,21 @@ module.exports = function (app, mongoose, config) {
             });
         });
     });
+
+    app.post('/user/:user/device/:device/unbind',function(req, res, next) {
+        var userID = req.params.user;
+        var deviceID = req.params.device;
+        var deviceName = req.body.name;
+        Device.findOne({ userID: userID, _id: deviceID }, function(err, doc) {
+            if(err) return next(err);
+            if(doc == null) {
+                return res.status(400).json({ success:false, error:"指定的设备不存在" });
+            }
+            doc.userID = undefined;
+            doc.save(function(err) {
+                if(err) return next(err);
+                return res.status(200).json({ success:true });
+            });
+        });
+    });
 };
