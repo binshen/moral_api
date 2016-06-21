@@ -8,6 +8,18 @@ module.exports = function (app, mongoose, config) {
     var User = mongoose.model('User');
     var Device = mongoose.model('Device');
 
+    app.get('/test/login',function(req, res, next) {
+        var username = "13999999999";
+        var password = Common.md5("888888");
+        User.findOne({username: username, password: password}, function(err, doc) {
+            if(err) return next(err);
+            return res.status(200).json({
+                success:true,
+                user: doc
+            });
+        });
+    });
+
     app.get('/test/update_name',function(req, res, next) {
         var userID = "5766a035f08504e7cd3fb33e";
         var deviceID = "5763c01ffc3b879a1b718fde";
