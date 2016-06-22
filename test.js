@@ -3,5 +3,5 @@
  */
 
 var moment = require('moment');
-var day = moment.unix(1466610063007/1000);
+var day = moment(1466610063007);
 console.log(day.format());
