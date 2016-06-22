@@ -92,13 +92,17 @@ module.exports = function (app, mongoose, config) {
             var count = docs.length;
             docs.forEach(function(doc){
                 var mac = doc.mac;
-                Data.find({
+                Data.findOne({
                     mac: mac,
                     day: moment().format('YYYYMMDD')
-                }).sort({'created': -1}).limit(1).exec(function(err, data) {
+                }).sort({'created': -1}).limit(1).lean().exec(function(err, data) {
                     if(err) return next(err);
 
                     count--;
+                    if(data != null) {
+                        delete data['_id'];
+                        delete data['mac'];
+                    }
                     doc.data = data;
                     if(count == 0) {
                         return res.status(200).json(docs);
