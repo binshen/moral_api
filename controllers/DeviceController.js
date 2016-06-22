@@ -6,8 +6,8 @@ var moment = require('moment');
 var Common = require('../utils/common');
 
 module.exports = function (app, mongoose, config) {
-    var Device = mongoose.model('Device');
     var Data = mongoose.model('Data');
+    var Device = mongoose.model('Device');
 
     app.get('/device/mac/:mac/get',function(req, res, next) {
         var mac = req.params.mac;

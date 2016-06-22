@@ -2,10 +2,12 @@
  * Created by bin.shen on 6/20/16.
  */
 
+var moment = require('moment');
 var Common = require('../utils/common');
 
 module.exports = function (app, mongoose, config) {
     var User = mongoose.model('User');
+    var Data = mongoose.model('Data');
     var Device = mongoose.model('Device');
 
     app.post('/user/login',function(req, res, next) {
@@ -84,9 +86,25 @@ module.exports = function (app, mongoose, config) {
 
     app.get('/user/:user/get_device',function(req, res, next) {
         var userID = req.params.user;
-        Device.find({ userID: userID }, function(err, doc) {
+        Device.find({ userID: userID }).lean().exec(function(err, docs) {
             if(err) return next(err);
-            return res.status(200).json(doc);
+
+            var count = docs.length;
+            docs.forEach(function(doc){
+                var mac = doc.mac;
+                Data.find({
+                    mac: mac,
+                    day: moment().format('YYYYMMDD')
+                }).sort({'created': -1}).limit(1).exec(function(err, data) {
+                    if(err) return next(err);
+
+                    count--;
+                    doc.data = data;
+                    if(count == 0) {
+                        return res.status(200).json(docs);
+                    }
+                });
+            });
         });
     });
 
