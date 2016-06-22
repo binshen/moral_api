@@ -2,6 +2,7 @@
  * Created by bin.shen on 6/20/16.
  */
 
+var moment = require('moment');
 var Common = require('../utils/common');
 
 module.exports = function (app, mongoose, config) {
@@ -18,11 +19,13 @@ module.exports = function (app, mongoose, config) {
 
     app.get('/device/mac/:mac/get_current_data',function(req, res, next) {
         var mac = req.params.mac;
-        var options = {
-            limit: 1,
-            sort: "date"
-        };
-        Data.find({ mac: mac }, options, function(err, doc) {
+        //var today = moment().startOf('day');
+        //var tomorrow = moment(today).add(1, 'days');
+        Data.find({
+            mac: mac,
+            day: moment().format('YYYYMMDD'),
+            //created: { $gte: today.valueOf(), $lt: tomorrow.valueOf() }
+        }).sort({'created': -1}).limit(1).exec(function(err, doc) {
             if(err) return next(err);
             return res.status(200).json(doc);
         });

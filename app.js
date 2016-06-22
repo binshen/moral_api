@@ -34,6 +34,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(methodOverride());
 
 mongoose.connect(config.mongodb.uri);
+mongoose.set('debug', true);
 
 var models = requireDir(__dirname + '/models');
 for(var i in models) { models[i](mongoose); }
