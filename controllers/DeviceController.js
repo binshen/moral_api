@@ -20,7 +20,7 @@ module.exports = function (app, mongoose, config) {
         var mac = req.params.mac;
         var options = {
             limit: 1,
-            sort: { date: -1 }
+            sort: "date"
         };
         Data.find({ mac: mac }, options, function(err, doc) {
             if(err) return next(err);
