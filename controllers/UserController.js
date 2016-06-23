@@ -206,7 +206,7 @@ module.exports = function (app, mongoose, config) {
         User.findOne({username: username}, function(err, doc) {
             if(err) return next(err);
             if(doc != null) {
-                return res.status(200).json({ success:false, error:"该手机号码已经注册过" });
+                return res.status(400).json({ success:false, error:"该手机号码已经注册过" });
             }
             doc = new User({ username: username, password: password });
             doc.save(function(err) {
