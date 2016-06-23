@@ -145,4 +145,45 @@ module.exports = function (app, mongoose, config) {
             });
         });
     });
+
+    app.post('/user/:user/online',function(req, res, next) {
+        var userID = req.params.user;
+        Device.find({ userID: userID }, function(err, docs) {
+            if(err) return next(err);
+
+            var count = docs.length;
+            docs.forEach(function(doc){
+                doc.app_status = 1;
+                doc.app_last_updated = Date.now();
+                doc.save(function(err) {
+                    if(err) return next(err);
+
+                    count--;
+                    if(count == 0) {
+                        return res.status(200).json({ success: true });
+                    }
+                });
+            });
+        });
+    });
+
+    app.post('/user/:user/offline',function(req, res, next) {
+        var userID = req.params.user;
+        Device.find({ userID: userID }, function(err, docs) {
+            if(err) return next(err);
+
+            var count = docs.length;
+            docs.forEach(function(doc){
+                doc.app_status = 0;
+                doc.save(function(err) {
+                    if(err) return next(err);
+
+                    count--;
+                    if(count == 0) {
+                        return res.status(200).json({ success: true });
+                    }
+                });
+            });
+        });
+    });
 };
