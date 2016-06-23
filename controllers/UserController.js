@@ -10,14 +10,43 @@ module.exports = function (app, mongoose, config) {
     var Data = mongoose.model('Data');
     var Device = mongoose.model('Device');
 
+    // app.post('/user/login',function(req, res, next) {
+    //     var username = req.body.username;
+    //     var password = Common.md5(req.body.password);
+    //     User.findOne({username: username, password: password}, function(err, doc) {
+    //         if(err) return next(err);
+    //         return res.status(200).json({
+    //             success:true,
+    //             user: doc
+    //         });
+    //     });
+    // });
+
     app.post('/user/login',function(req, res, next) {
         var username = req.body.username;
         var password = Common.md5(req.body.password);
-        User.findOne({username: username, password: password}, function(err, doc) {
+        User.findOne({username: username, password: password}, function(err, user) {
             if(err) return next(err);
-            return res.status(200).json({
-                success:true,
-                user: doc
+
+            Device.find({ userID: user._id }, function(err, docs) {
+                if(err) return next(err);
+
+                var count = docs.length;
+                docs.forEach(function(doc){
+                    doc.app_status = 1;
+                    doc.app_last_updated = Date.now();
+                    doc.save(function(err) {
+                        if(err) return next(err);
+
+                        count--;
+                        if(count == 0) {
+                            return res.status(200).json({
+                                success:true,
+                                user: user
+                            });
+                        }
+                    });
+                });
             });
         });
     });
