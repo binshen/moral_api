@@ -55,39 +55,6 @@ module.exports = function (app, mongoose, config) {
         return res.status(200).json({ success:true });
     });
 
-    app.post('/user/register', function(req, res, next) {
-        var username = req.body.username;
-        var password = Common.md5(req.body.password);
-        User.findOne({username: username}, function(err, doc) {
-            if(err) return next(err);
-            if(doc != null) {
-                return res.status(400).json({ success:false, error:"该手机号码已经注册过" });
-            }
-            doc = new User({ username: username, password: password });
-            doc.save(function(err) {
-                if(err) return next(err);
-                return res.status(200).json({ success:true });
-            });
-        });
-    });
-
-    app.post('/user/forget_psw', function(req, res, next) {
-        var username = req.body.username;
-        var password = Common.md5(req.body.password);
-        var new_password = Common.md5(req.body.password);
-        User.findOne({username: username, password: password}, function(err, doc) {
-            if(err) return next(err);
-            if(doc == null) {
-                return res.status(400).json({ success:false, error:"该用户不存在" });
-            }
-            doc.password = new_password;
-            doc.save(function(err) {
-                if(err) return next(err);
-                return res.status(200).json({ success:true });
-            });
-        });
-    });
-
     app.post('/user/add_device', function(req, res, next) {
         var userID = req.body.userID;
         var mac = req.body.mac;
@@ -212,6 +179,60 @@ module.exports = function (app, mongoose, config) {
                         return res.status(200).json({ success: true });
                     }
                 });
+            });
+        });
+    });
+
+    app.post('/user/:user/change_psw', function(req, res, next) {
+        var userID = req.params.user;
+        var password = Common.md5(req.body.password);
+        var new_password = Common.md5(req.body.new_password);
+        var new_password_2 = Common.md5(req.body.new_password_2);
+        User.findOne({_id: userID, password: password}, function(err, doc) {
+            if(err) return next(err);
+            if(doc == null) {
+                return res.status(400).json({ success:false, error:"输入的原密码不正确" });
+            }
+            if(new_password != new_password) {
+                return res.status(400).json({ success:false, error:"两次输入的密码不一致" });
+            }
+            doc.password = new_password;
+            doc.save(function(err) {
+                if(err) return next(err);
+                return res.status(200).json({ success:true });
+            });
+        });
+    });
+
+    app.post('/user/register', function(req, res, next) {
+        var username = req.body.username;
+        var password = Common.md5(req.body.password);
+        User.findOne({username: username}, function(err, doc) {
+            if(err) return next(err);
+            if(doc != null) {
+                return res.status(400).json({ success:false, error:"该手机号码已经注册过" });
+            }
+            doc = new User({ username: username, password: password });
+            doc.save(function(err) {
+                if(err) return next(err);
+                return res.status(200).json({ success:true });
+            });
+        });
+    });
+
+    app.post('/user/forget_psw', function(req, res, next) {
+        var username = req.body.username;
+        var password = Common.md5(req.body.password);
+        var new_password = Common.md5(req.body.password);
+        User.findOne({username: username, password: password}, function(err, doc) {
+            if(err) return next(err);
+            if(doc == null) {
+                return res.status(400).json({ success:false, error:"该用户不存在" });
+            }
+            doc.password = new_password;
+            doc.save(function(err) {
+                if(err) return next(err);
+                return res.status(200).json({ success:true });
             });
         });
     });
