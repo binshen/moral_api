@@ -14,7 +14,7 @@ module.exports = function (app, mongoose, config) {
         User.findOne({username: username}, function(err, doc) {
             if(err) return next(err);
             if(doc != null) {
-                return res.status(400).json({ success:false, error:"该手机号码已经注册过" });
+                return res.status(200).json({ success:false, error:"该手机号码已经注册过" });
             }
             doc = new User({ username: username, password: password });
             doc.save(function(err) {
@@ -43,7 +43,7 @@ module.exports = function (app, mongoose, config) {
         Device.findOne({ userID: userID, _id: deviceID }, function(err, doc) {
             if(err) return next(err);
             if(doc == null) {
-                return res.status(400).json({ success:false, error:"指定的设备不存在" });
+                return res.status(200).json({ success:false, error:"指定的设备不存在" });
             }
             doc.name = deviceName;
             doc.save(function(err) {
@@ -93,7 +93,7 @@ module.exports = function (app, mongoose, config) {
         User.findOne({username: username}, function(err, doc) {
             if(err) return next(err);
             if(doc != null) {
-                return res.status(400).json({ success:false, error:"该手机号码已经注册过" });
+                return res.status(200).json({ success:false, error:"该手机号码已经注册过" });
             }
             var user = new User({ username: username, password: password });
             user.save(function(err) {

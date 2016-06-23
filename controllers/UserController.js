@@ -115,7 +115,7 @@ module.exports = function (app, mongoose, config) {
         Device.findOne({ userID: userID, _id: deviceID }, function(err, doc) {
             if(err) return next(err);
             if(doc == null) {
-                return res.status(400).json({ success:false, error:"指定的设备不存在" });
+                return res.status(200).json({ success:false, error:"指定的设备不存在" });
             }
             doc.name = deviceName;
             doc.save(function(err) {
@@ -132,7 +132,7 @@ module.exports = function (app, mongoose, config) {
         Device.findOne({ userID: userID, _id: deviceID }, function(err, doc) {
             if(err) return next(err);
             if(doc == null) {
-                return res.status(400).json({ success:false, error:"指定的设备不存在" });
+                return res.status(200).json({ success:false, error:"指定的设备不存在" });
             }
             doc.userID = undefined;
             doc.save(function(err) {
@@ -190,7 +190,7 @@ module.exports = function (app, mongoose, config) {
         User.findOne({_id: userID, password: password}, function(err, doc) {
             if(err) return next(err);
             if(doc == null) {
-                return res.status(400).json({ success:false, error:"输入的原密码不正确" });
+                return res.status(200).json({ success:false, error:"输入的原密码不正确" });
             }
             doc.password = new_password;
             doc.save(function(err) {
@@ -223,7 +223,7 @@ module.exports = function (app, mongoose, config) {
         User.findOne({username: username, password: password}, function(err, doc) {
             if(err) return next(err);
             if(doc == null) {
-                return res.status(400).json({ success:false, error:"该用户不存在" });
+                return res.status(200).json({ success:false, error:"该用户不存在" });
             }
             doc.password = new_password;
             doc.save(function(err) {
