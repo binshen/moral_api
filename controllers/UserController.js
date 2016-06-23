@@ -187,14 +187,10 @@ module.exports = function (app, mongoose, config) {
         var userID = req.params.user;
         var password = Common.md5(req.body.password);
         var new_password = Common.md5(req.body.new_password);
-        var new_password_2 = Common.md5(req.body.new_password_2);
         User.findOne({_id: userID, password: password}, function(err, doc) {
             if(err) return next(err);
             if(doc == null) {
                 return res.status(400).json({ success:false, error:"输入的原密码不正确" });
-            }
-            if(new_password != new_password) {
-                return res.status(400).json({ success:false, error:"两次输入的密码不一致" });
             }
             doc.password = new_password;
             doc.save(function(err) {
