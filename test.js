@@ -6,4 +6,4 @@
 // var day = moment(1466610063007);
 // console.log(day.format());
 
-console.log(0x96);
+console.log(0x50);
