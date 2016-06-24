@@ -85,7 +85,7 @@ module.exports = function (app, mongoose, config) {
 
     app.get('/user/:user/get_device',function(req, res, next) {
         var userID = req.params.user;
-        Device.find({ userID: userID }).lean().exec(function(err, docs) {
+        Device.find({ userID: userID }).sort({type:-1}).lean().exec(function(err, docs) {
             if(err) return next(err);
 
             var count = docs.length;
