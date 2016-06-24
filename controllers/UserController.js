@@ -9,6 +9,7 @@ module.exports = function (app, mongoose, config) {
     var User = mongoose.model('User');
     var Data = mongoose.model('Data');
     var Device = mongoose.model('Device');
+    var Feedback = mongoose.model('Feedback');
 
     // app.post('/user/login',function(req, res, next) {
     //     var username = req.body.username;
@@ -230,6 +231,16 @@ module.exports = function (app, mongoose, config) {
                 if(err) return next(err);
                 return res.status(200).json({ success:true });
             });
+        });
+    });
+
+    app.post('/user/:user/feedback', function(req, res, next) {
+        var userID = req.params.user;
+        var feedback = req.body.feedback;
+        var doc = new Feedback({ userID: userID, feedback: feedback, created: Date.now() });
+        doc.save(function(err) {
+            if(err) return next(err);
+            return res.status(200).json({ success:true });
         });
     });
 };
