@@ -39,7 +39,7 @@ module.exports = function (app, mongoose, config) {
             day: day
         }).sort({'created': -1}).limit(1).exec(function(err, doc) {
             if(err) return next(err);
-            return res.status(200).json(doc);
+            return res.status(200).json(doc == null ? {} : doc);
         });
     });
 };
