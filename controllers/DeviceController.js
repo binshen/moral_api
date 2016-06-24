@@ -34,7 +34,7 @@ module.exports = function (app, mongoose, config) {
     app.get('/device/mac/:mac/get_history',function(req, res, next) {
         var mac = req.params.mac;
         var day = req.query.day;
-        Data.find({
+        Data.findOne({
             mac: mac,
             day: day
         }).sort({'created': -1}).limit(1).exec(function(err, doc) {
