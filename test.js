@@ -6,4 +6,6 @@
 // var day = moment(1466610063007);
 // console.log(day.format());
 
-console.log(0x50);
+var random = require("random-js")(); // uses the nativeMath engine
+var value = random.integer(100000, 999999);
+console.log(value)

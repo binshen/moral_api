@@ -3,9 +3,11 @@
  */
 
 var moment = require('moment');
+var random = require("random-js")();
 var Common = require('../utils/common');
 
 module.exports = function (app, mongoose, config) {
+    var Auth = mongoose.model('Auth');
     var User = mongoose.model('User');
     var Data = mongoose.model('Data');
     var Device = mongoose.model('Device');
@@ -201,6 +203,34 @@ module.exports = function (app, mongoose, config) {
         });
     });
 
+    app.post('/user/:user/feedback', function(req, res, next) {
+        var userID = req.params.user;
+        var feedback = req.body.feedback;
+        var doc = new Feedback({ userID: userID, feedback: feedback, created: Date.now() });
+        doc.save(function(err) {
+            if(err) return next(err);
+            return res.status(200).json({ success:true });
+        });
+    });
+
+    app.post('/user/verify_code', function(req, res, next) {
+        var tel = req.body.tel;
+        Auth.findOne({ tel: tel }, function(err, doc) {
+            if (err) return next(err);
+            var code = random.integer(100000, 999999);
+            if(doc == null) {
+                doc = new Auth({ tel: tel, code: code, created: Date.now() });
+            } else {
+                doc.code = code;
+                doc.created = Date.now();
+            }
+            doc.save(function(err) {
+                if(err) return next(err);
+                return res.status(200).json({ success:true });
+            });
+        });
+    });
+
     app.post('/user/register', function(req, res, next) {
         var username = req.body.username;
         var password = Common.md5(req.body.password);
@@ -231,16 +261,6 @@ module.exports = function (app, mongoose, config) {
                 if(err) return next(err);
                 return res.status(200).json({ success:true });
             });
-        });
-    });
-
-    app.post('/user/:user/feedback', function(req, res, next) {
-        var userID = req.params.user;
-        var feedback = req.body.feedback;
-        var doc = new Feedback({ userID: userID, feedback: feedback, created: Date.now() });
-        doc.save(function(err) {
-            if(err) return next(err);
-            return res.status(200).json({ success:true });
         });
     });
 };
