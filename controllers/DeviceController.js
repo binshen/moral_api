@@ -30,4 +30,16 @@ module.exports = function (app, mongoose, config) {
             return res.status(200).json(doc);
         });
     });
+
+    app.get('/device/mac/:mac/get_history_data',function(req, res, next) {
+        var mac = req.params.mac;
+        var day = req.query.day;
+        Data.find({
+            mac: mac,
+            day: day
+        }).sort({'created': -1}).limit(1).exec(function(err, doc) {
+            if(err) return next(err);
+            return res.status(200).json(doc);
+        });
+    });
 };
