@@ -13,6 +13,7 @@ module.exports = function (app, mongoose, config) {
                 { url: 'http://121.40.92.176/apps/app-debug.apk' }
             ]
         }];
+        res.set('Content-Type', 'text/xml');
         res.send(xml(data, true));
     });
 };
