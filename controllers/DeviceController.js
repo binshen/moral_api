@@ -65,7 +65,7 @@ module.exports = function (app, mongoose, config) {
             }
         ]).exec(function(err, doc) {
             if(err) return next(err);
-            return res.status(200).json(doc == null ? {} : doc[0]);
+            return res.status(200).json(doc == null || doc.length < 1 ? {} : doc[0]);
         });
     });
 };
