@@ -9,7 +9,7 @@ module.exports = function (app, mongoose, config) {
         var data = [{
             update: [
                 { name: '摩瑞尔云' } ,
-                { version: '0.2' },
+                { version: 2 },
                 { url: 'http://121.40.92.176/apps/app-debug.apk' }
             ]
         }];
