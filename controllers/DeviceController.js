@@ -60,7 +60,7 @@ module.exports = function (app, mongoose, config) {
                     x3:  { $avg: "$x3" },
                     x9:  { $avg: "$x9" },
                     x10: { $avg: "$x10" },
-                    x11: { $avg: "$x11" }
+                    x12: { $avg: "$x12" }
                 }
             }
         ]).exec(function(err, doc) {
