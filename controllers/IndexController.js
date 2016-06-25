@@ -10,6 +10,7 @@ module.exports = function (app, mongoose, config) {
             update: [
                 { name: 'moral_android_app' } ,
                 { version: 2 },
+                { message: "检测到新版本，立即更新吗123?" },
                 { url: 'http://121.40.92.176/apps/app-debug.apk' }
             ]
         }];
