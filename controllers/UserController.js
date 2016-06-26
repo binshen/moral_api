@@ -94,7 +94,7 @@ module.exports = function (app, mongoose, config) {
                 Data.findOne({
                     mac: mac,
                     day: moment().format('YYYYMMDD')
-                }).select('x1 x3 x9 x10 x11 x12 x13 x14 -_id').sort({'created': -1}).limit(1).lean().exec(function(err, data) {
+                }).select('x1 x3 x9 x10 x11 x12 x13 x14 created -_id').sort({'created': -1}).limit(1).lean().exec(function(err, data) {
                     if(err) return next(err);
 
                     count--;
