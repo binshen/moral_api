@@ -85,7 +85,7 @@ module.exports = function (app, mongoose, config) {
 
     app.get('/user/:user/get_device',function(req, res, next) {
         var userID = req.params.user;
-        Device.find({ userID: userID }).sort({type:-1}).lean().exec(function(err, docs) {
+        Device.find({ userID: userID }).select('mac name type status last_updated').sort({type:-1}).lean().exec(function(err, docs) {
             if(err) return next(err);
 
             var count = docs.length;
@@ -94,7 +94,7 @@ module.exports = function (app, mongoose, config) {
                 Data.findOne({
                     mac: mac,
                     day: moment().format('YYYYMMDD')
-                }).sort({'created': -1}).limit(1).lean().exec(function(err, data) {
+                }).select('x1 x3 x9 x10 x11 x12 x13 x14 -_id').sort({'created': -1}).limit(1).lean().exec(function(err, data) {
                     if(err) return next(err);
 
                     count--;
