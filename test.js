@@ -33,3 +33,6 @@
 // };
 //
 // http.request(options, callback).end();
+
+var common = require('./utils/common');
+common.sendMsg("18118438026", "测试短信认证：您的验证码是：123456.", function(err, doc) {});

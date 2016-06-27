@@ -218,7 +218,7 @@ module.exports = function (app, mongoose, config) {
         Auth.findOne({ tel: tel }, function(err, doc) {
             if (err) return next(err);
             var code = random.integer(100000, 999999);
-            var msg = "测试内容：您好！您的验证码是：" + code;
+            var msg = "测试短信认证：您的验证码是：" + code;
             if(doc == null) {
                 doc = new Auth({ tel: tel, code: code, created: Date.now() });
                 doc.save(function(err) {
