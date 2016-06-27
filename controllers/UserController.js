@@ -154,6 +154,9 @@ module.exports = function (app, mongoose, config) {
             if(err) return next(err);
 
             var count = docs.length;
+            if(count == 0) {
+                return res.status(200).json({ success: true });
+            }
             docs.forEach(function(doc){
                 doc.app_status = 1;
                 doc.app_last_updated = Date.now();
