@@ -213,7 +213,7 @@ module.exports = function (app, mongoose, config) {
         });
     });
 
-    app.post('/user/verify_code', function(req, res, next) {
+    app.post('/user/request_code', function(req, res, next) {
         var tel = req.body.tel;
         Auth.findOne({ tel: tel }, function(err, doc) {
             if (err) return next(err);
