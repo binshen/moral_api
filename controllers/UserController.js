@@ -89,6 +89,9 @@ module.exports = function (app, mongoose, config) {
             if(err) return next(err);
 
             var count = docs.length;
+            if(count == 0) {
+                return res.status(200).json([]);
+            }
             docs.forEach(function(doc){
                 var mac = doc.mac;
                 Data.findOne({
