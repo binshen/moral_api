@@ -3,10 +3,41 @@
  */
 
 var Common = require('../utils/common');
+var random = require("random-js")();
 
 module.exports = function (app, mongoose, config) {
+    var Auth = mongoose.model('Auth');
     var User = mongoose.model('User');
+    var Data = mongoose.model('Data');
     var Device = mongoose.model('Device');
+    var Feedback = mongoose.model('Feedback');
+
+    app.get('/user/verify_code', function(req, res, next) {
+        var tel = req.query.tel;
+        Auth.findOne({ tel: tel }, function(err, doc) {
+            if (err) return next(err);
+            var code = random.integer(100000, 999999);
+            if(doc == null) {
+                doc = new Auth({ tel: tel, code: code, created: Date.now() });
+                doc.save(function(err) {
+                    if(err) return next(err);
+                    return res.status(200).json({ success:true });
+                });
+            } else {
+                var created = doc.created;
+                if(Date.now() - created > 1000 * 60) {
+                    doc.code = code;
+                    doc.created = Date.now();
+                    doc.save(function(err) {
+                        if(err) return next(err);
+                        return res.status(200).json({ success:true });
+                    });
+                } else {
+                    return res.status(200).json({ success:true });
+                }
+            }
+        });
+    });
 
     app.get('/user/register', function(req, res, next) {
         var username = "13999999999";

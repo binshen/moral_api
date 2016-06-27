@@ -4,7 +4,7 @@
 
 var moment = require('moment');
 var random = require("random-js")();
-var Common = require('../utils/common');
+var common = require('../utils/common');
 
 module.exports = function (app, mongoose, config) {
     var Auth = mongoose.model('Auth');
@@ -15,7 +15,7 @@ module.exports = function (app, mongoose, config) {
 
     // app.post('/user/login',function(req, res, next) {
     //     var username = req.body.username;
-    //     var password = Common.md5(req.body.password);
+    //     var password = common.md5(req.body.password);
     //     User.findOne({username: username, password: password}, function(err, user) {
     //         if(err) return next(err);
     //
@@ -44,7 +44,7 @@ module.exports = function (app, mongoose, config) {
 
     app.post('/user/login',function(req, res, next) {
         var username = req.body.username;
-        var password = Common.md5(req.body.password);
+        var password = common.md5(req.body.password);
         User.findOne({username: username, password: password}, function(err, doc) {
             if(err) return next(err);
             return res.status(200).json({
@@ -188,8 +188,8 @@ module.exports = function (app, mongoose, config) {
 
     app.post('/user/:user/change_psw', function(req, res, next) {
         var userID = req.params.user;
-        var password = Common.md5(req.body.password);
-        var new_password = Common.md5(req.body.new_password);
+        var password = common.md5(req.body.password);
+        var new_password = common.md5(req.body.new_password);
         User.findOne({_id: userID, password: password}, function(err, doc) {
             if(err) return next(err);
             if(doc == null) {
@@ -218,22 +218,34 @@ module.exports = function (app, mongoose, config) {
         Auth.findOne({ tel: tel }, function(err, doc) {
             if (err) return next(err);
             var code = random.integer(100000, 999999);
+            var msg = "测试内容：您好！您的验证码是：" + code;
             if(doc == null) {
                 doc = new Auth({ tel: tel, code: code, created: Date.now() });
+                doc.save(function(err) {
+                    if(err) return next(err);
+                    common.sendMsg(tel, msg, function() {});
+                    return res.status(200).json({ success:true });
+                });
             } else {
-                doc.code = code;
-                doc.created = Date.now();
+                var created = doc.created;
+                if(Date.now() - created > 1000 * 60) {
+                    doc.code = code;
+                    doc.created = Date.now();
+                    doc.save(function(err) {
+                        if(err) return next(err);
+                        common.sendMsg(tel, msg, function() {});
+                        return res.status(200).json({ success:true });
+                    });
+                } else {
+                    return res.status(200).json({ success:true });
+                }
             }
-            doc.save(function(err) {
-                if(err) return next(err);
-                return res.status(200).json({ success:true });
-            });
         });
     });
 
     app.post('/user/register', function(req, res, next) {
         var username = req.body.username;
-        var password = Common.md5(req.body.password);
+        var password = common.md5(req.body.password);
         User.findOne({username: username}, function(err, doc) {
             if(err) return next(err);
             if(doc != null) {
@@ -249,8 +261,8 @@ module.exports = function (app, mongoose, config) {
 
     app.post('/user/forget_psw', function(req, res, next) {
         var username = req.body.username;
-        var password = Common.md5(req.body.password);
-        var new_password = Common.md5(req.body.password);
+        var password = common.md5(req.body.password);
+        var new_password = common.md5(req.body.password);
         User.findOne({username: username, password: password}, function(err, doc) {
             if(err) return next(err);
             if(doc == null) {
