@@ -63,8 +63,9 @@ module.exports = function (app, mongoose, config) {
         var mac = req.body.mac;
         Device.findOne({mac: mac}, function(err, doc) {
             if(err) return next(err);
+            var now = Date.now();
             if(doc == null) {
-                doc = new Device({ mac: mac, userID: userID });
+                doc = new Device({ mac: mac, userID: userID, status:1, last_updated:now, app_status:1, app_last_updated: now });
                 doc.save(function(err) {
                     if(err) return next(err);
                     return res.status(200).json({ success:true, status: 1 });
@@ -72,6 +73,10 @@ module.exports = function (app, mongoose, config) {
             } else {
                 if(doc.userID == null) {
                     doc.userID = userID;
+                    doc.status = 1;
+                    doc.last_updated = now;
+                    doc.app_status = 1;
+                    doc.app_last_updated = now;
                     doc.save(function(err) {
                         if(err) return next(err);
                         return res.status(200).json({ success:true, status: 2 });
