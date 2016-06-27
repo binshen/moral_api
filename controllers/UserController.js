@@ -114,6 +114,22 @@ module.exports = function (app, mongoose, config) {
         });
     });
 
+    app.post('/user/:user/update_name',function(req, res, next) {
+        var userID = req.params.user;
+        var userName = req.body.nickname;
+        User.findOne({ _id: userID }, function(err, doc) {
+            if(err) return next(err);
+            if(doc == null) {
+                return res.status(200).json({ success:false, error:"指定的设备不存在" });
+            }
+            doc.nickname = userName;
+            doc.save(function(err) {
+                if(err) return next(err);
+                return res.status(200).json({ success:true });
+            });
+        });
+    });
+
     app.post('/user/:user/device/:device/update_name',function(req, res, next) {
         var userID = req.params.user;
         var deviceID = req.params.device;
