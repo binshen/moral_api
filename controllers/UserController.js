@@ -246,32 +246,57 @@ module.exports = function (app, mongoose, config) {
     app.post('/user/register', function(req, res, next) {
         var username = req.body.username;
         var password = common.md5(req.body.password);
+        var code = req.body.code;
         User.findOne({username: username}, function(err, doc) {
             if(err) return next(err);
             if(doc != null) {
-                return res.status(200).json({ success:false, error:"该手机号码已经注册过" });
+                return res.status(200).json({ success:false, error:"您输入的手机号码已经注册过" });
             }
-            doc = new User({ username: username, password: password });
-            doc.save(function(err) {
+            Auth.findOne({ tel: username }, function(err, auth) {
                 if(err) return next(err);
-                return res.status(200).json({ success:true });
+                if(auth == null) {
+                    return res.status(200).json({ success:false, error:"您发送的验证码不正确" });
+                } else {
+                    var created = auth.created;
+                    if(Date.now() - created > 1000 * 60) {
+                        return res.status(200).json({ success:false, error:"您发送的验证码已过期" });
+                    } else {
+                        doc = new User({ username: username, password: password });
+                        doc.save(function(err) {
+                            if(err) return next(err);
+                            return res.status(200).json({ success:true });
+                        });
+                    }
+                }
             });
         });
     });
 
     app.post('/user/forget_psw', function(req, res, next) {
         var username = req.body.username;
-        var password = common.md5(req.body.password);
         var new_password = common.md5(req.body.password);
-        User.findOne({username: username, password: password}, function(err, doc) {
+        var code = req.body.code;
+        User.findOne({username: username}, function(err, doc) {
             if(err) return next(err);
             if(doc == null) {
-                return res.status(200).json({ success:false, error:"该用户不存在" });
+                return res.status(200).json({ success:false, error:"您输入的手机号码不存在" });
             }
-            doc.password = new_password;
-            doc.save(function(err) {
+            Auth.findOne({ tel: username }, function(err, auth) {
                 if(err) return next(err);
-                return res.status(200).json({ success:true });
+                if(auth == null) {
+                    return res.status(200).json({ success:false, error:"您发送的验证码不正确" });
+                } else {
+                    var created = auth.created;
+                    if(Date.now() - created > 1000 * 60) {
+                        return res.status(200).json({ success:false, error:"您发送的验证码已过期" });
+                    } else {
+                        doc.password = new_password;
+                        doc.save(function(err) {
+                            if(err) return next(err);
+                            return res.status(200).json({ success:true });
+                        });
+                    }
+                }
             });
         });
     });
