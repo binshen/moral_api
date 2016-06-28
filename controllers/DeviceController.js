@@ -63,9 +63,9 @@ module.exports = function (app, mongoose, config) {
                     x11: { $avg: "$x11" }
                 }
             }
-        ]).exec(function(err, doc) {
+        ]).exec(function(err, docs) {
             if(err) return next(err);
-            return res.status(200).json(doc == null || doc.length < 1 ? {} : doc[0]);
+            return res.status(200).json(docs == null || docs.length < 1 ? {} : docs[0]);
         });
     });
 };

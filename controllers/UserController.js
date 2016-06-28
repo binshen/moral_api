@@ -62,7 +62,7 @@ module.exports = function (app, mongoose, config) {
         var userID = req.body.userID;
         var mac = req.body.mac;
         if(mac == null) {
-            return res.status(200).json({ success:false, error: "" });
+            return res.status(200).json({ success:false, error: "Mac地址不能为空" });
         }
         mac = mac.toLowerCase();
         Device.findOne({ mac: mac }, function(err, doc) {
@@ -115,10 +115,18 @@ module.exports = function (app, mongoose, config) {
                     }
                     doc.data = data;
                     if(count == 0) {
-                        return res.status(200).json(docs);
+                        return res.status(200).json(docs == null || docs.length < 1 ? [] : docs);
                     }
                 });
             });
+        });
+    });
+
+    app.get('/user/:user/get_device_info',function(req, res, next) {
+        var userID = req.params.user;
+        Device.find({ userID: userID }).select('mac name type status last_updated').sort({type:-1}).lean().exec(function(err, docs) {
+            if(err) return next(err);
+            return res.status(200).json(docs == null || docs.length < 1 ? [] : docs);
         });
     });
 
