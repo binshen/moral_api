@@ -165,6 +165,7 @@ module.exports = function (app, mongoose, config) {
                 return res.status(200).json({ success:false, error:"指定的设备不存在" });
             }
             doc.userID = undefined;
+            doc.name = undefined;
             doc.save(function(err) {
                 if(err) return next(err);
                 return res.status(200).json({ success:true });
