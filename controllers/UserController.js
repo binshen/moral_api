@@ -64,7 +64,7 @@ module.exports = function (app, mongoose, config) {
         Device.findOne({mac: mac}, function(err, doc) {
             if(err) return next(err);
             if(doc == null) {
-                doc = new Device({ mac: mac, userID: userID, status: 1, last_updated: Date.now(), app_status: 1, app_last_updated: Date.now() });
+                doc = new Device({ mac: mac.toLowerCase(), userID: userID, status: 1, last_updated: Date.now(), app_status: 1, app_last_updated: Date.now() });
                 doc.save(function(err) {
                     if(err) return next(err);
                     return res.status(200).json({ success:true, status: 1 });
