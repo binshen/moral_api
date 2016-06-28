@@ -12,7 +12,40 @@ module.exports = function (app, mongoose, config) {
     var Device = mongoose.model('Device');
     var Feedback = mongoose.model('Feedback');
 
-    app.get('/user/verify_code', function(req, res, next) {
+    app.get('/test/add_device', function(req, res, next) {
+        var userID = "5766a035f08504e7cd3fb33e";
+        var mac = "accf23b87fa2";
+        if(mac == null) {
+            return res.status(200).json({ success:false, error: "" });
+        }
+        mac = mac.toLowerCase();
+        Device.findOne({ mac: mac }, function(err, doc) {
+            if(err) return next(err);
+            if(doc == null) {
+                doc = new Device({ mac: mac, userID: userID, status: 1, last_updated: Date.now(), app_status: 1, app_last_updated: Date.now() });
+                doc.save(function(err) {
+                    if(err) return next(err);
+                    return res.status(200).json({ success:true, status: 1 });
+                });
+            } else {
+                if(doc.userID == null) {
+                    doc.userID = userID;
+                    doc.status = 1;
+                    doc.last_updated = Date.now();
+                    doc.app_status = 1;
+                    doc.app_last_updated = Date.now();
+                    doc.save(function(err) {
+                        if(err) return next(err);
+                        return res.status(200).json({ success:true, status: 2 });
+                    });
+                } else {
+                    return res.status(200).json({ success:true, status: 3 });
+                }
+            }
+        });
+    });
+
+    app.get('/test/verify_code', function(req, res, next) {
         var tel = req.query.tel;
         Auth.findOne({ tel: tel }, function(err, doc) {
             if (err) return next(err);
