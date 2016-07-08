@@ -102,6 +102,11 @@ module.exports = function (app, mongoose, config) {
             }
             docs.forEach(function(doc){
                 var mac = doc.mac;
+                var last_updated = doc.last_updated;
+                if(last_updated == null || Date.now() - last_updated >= 60000) {
+                    doc.status = 0;
+                }
+
                 Data.findOne({
                     mac: mac,
                     day: moment().format('YYYYMMDD')
@@ -126,6 +131,13 @@ module.exports = function (app, mongoose, config) {
         var userID = req.params.user;
         Device.find({ userID: userID }).select('mac name type status last_updated').sort({type:-1}).lean().exec(function(err, docs) {
             if(err) return next(err);
+
+            docs.forEach(function(doc){
+                var last_updated = doc.last_updated;
+                if(last_updated == null || Date.now() - last_updated >= 60000) {
+                    doc.status = 0;
+                }
+            });
             return res.status(200).json(docs == null || docs.length < 1 ? [] : docs);
         });
     });
