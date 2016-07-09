@@ -12,5 +12,5 @@ module.exports = function (mongoose) {
         collection: 'device_ranks',
         id: false
     });
-    return mongoose.model('deviceRank', deviceRank);
+    return mongoose.model('DeviceRank', deviceRank);
 };
