@@ -13,6 +13,7 @@ var logger = require('morgan');
 var path = require('path');
 var fs = require('fs');
 var requireDir = require('require-dir');
+var expressPromise = require('express-promise');
 
 var app = express();
 app.set("port", config.api.port);
@@ -32,9 +33,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(methodOverride());
+app.use(expressPromise());
 
+mongoose.Promise = global.Promise;
 mongoose.connect(config.mongodb.uri);
-mongoose.set('debug', true);
+mongoose.set('debug', false);
 
 var models = requireDir(__dirname + '/models');
 for(var i in models) { models[i](mongoose); }

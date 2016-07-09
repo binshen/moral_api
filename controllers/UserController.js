@@ -5,6 +5,8 @@
 var moment = require('moment');
 var random = require("random-js")();
 var common = require('../utils/common');
+var wrap   = require('co-express');
+
 
 module.exports = function (app, mongoose, config) {
     var Auth = mongoose.model('Auth');
@@ -12,35 +14,6 @@ module.exports = function (app, mongoose, config) {
     var Data = mongoose.model('Data');
     var Device = mongoose.model('Device');
     var Feedback = mongoose.model('Feedback');
-
-    // app.post('/user/login',function(req, res, next) {
-    //     var username = req.body.username;
-    //     var password = common.md5(req.body.password);
-    //     User.findOne({username: username, password: password}, function(err, user) {
-    //         if(err) return next(err);
-    //
-    //         Device.find({ userID: user._id }, function(err, docs) {
-    //             if(err) return next(err);
-    //
-    //             var count = docs.length;
-    //             docs.forEach(function(doc){
-    //                 doc.app_status = 1;
-    //                 doc.app_last_updated = Date.now();
-    //                 doc.save(function(err) {
-    //                     if(err) return next(err);
-    //
-    //                     count--;
-    //                     if(count == 0) {
-    //                         return res.status(200).json({
-    //                             success:true,
-    //                             user: user
-    //                         });
-    //                     }
-    //                 });
-    //             });
-    //         });
-    //     });
-    // });
 
     app.post('/user/login',function(req, res, next) {
         var username = req.body.username;
@@ -91,41 +64,24 @@ module.exports = function (app, mongoose, config) {
         });
     });
 
-    app.get('/user/:user/get_device',function(req, res, next) {
+    app.get('/user/:user/get_device', wrap(function* (req, res, next) {
         var userID = req.params.user;
-        Device.find({ userID: userID }).select('mac name type status last_updated').sort({type:-1}).lean().exec(function(err, docs) {
-            if(err) return next(err);
-
-            var count = docs.length;
-            if(count == 0) {
-                return res.status(200).json([]);
+        var docs = yield Device.find({ userID: userID }).select('mac name type status last_updated').sort({type:-1}).lean().exec();
+        docs.forEach(function(doc){
+            var mac = doc.mac;
+            var last_updated = doc.last_updated;
+            if(last_updated == null || Date.now() - last_updated >= 60000) {
+                doc.status = 0;
             }
-            docs.forEach(function(doc){
-                var mac = doc.mac;
-                var last_updated = doc.last_updated;
-                if(last_updated == null || Date.now() - last_updated >= 60000) {
-                    doc.status = 0;
-                }
-
-                Data.findOne({
-                    mac: mac,
-                    day: moment().format('YYYYMMDD')
-                }).select('x1 x3 x9 x10 x11 x12 x13 x14 p1 p2 p3 p4 fei created -_id').sort({'created': -1}).limit(1).lean().exec(function(err, data) {
-                    if(err) return next(err);
-
-                    count--;
-                    if(data != null) {
-                        delete data['_id'];
-                        delete data['mac'];
-                    }
-                    doc.data = data;
-                    if(count == 0) {
-                        return res.status(200).json(docs == null || docs.length < 1 ? [] : docs);
-                    }
-                });
-            });
+            var data = Data.findOne({ mac: mac, day: moment().format('YYYYMMDD') }).select('x1 x3 x9 x10 x11 x12 x13 x14 p1 p2 p3 p4 fei created -_id').sort({'created': -1}).limit(1).lean();
+            if(data != null) {
+                delete data['_id'];
+                delete data['mac'];
+            }
+            doc.data = data;
         });
-    });
+        res.status(200).json(docs == null || docs.length < 1 ? [] : docs);
+    }));
 
     app.get('/user/:user/get_device_info',function(req, res, next) {
         var userID = req.params.user;
@@ -193,52 +149,31 @@ module.exports = function (app, mongoose, config) {
         });
     });
 
-    app.post('/user/:user/online',function(req, res, next) {
+    app.post('/user/:user/online', wrap(function* (req, res, next) {
         var userID = req.params.user;
-        Device.find({ userID: userID }, function(err, docs) {
-            if(err) return next(err);
-
-            var count = docs.length;
-            if(count == 0) {
-                return res.status(200).json({ success: true });
-            }
-            docs.forEach(function(doc){
-                doc.app_status = 1;
-                doc.app_last_updated = Date.now();
-                doc.save(function(err) {
-                    if(err) return next(err);
-
-                    count--;
-                    if(count == 0) {
-                        return res.status(200).json({ success: true });
-                    }
-                });
-            });
+        var docs = yield Device.find({ userID: userID });
+        if(docs == null || docs.length == 0) {
+            return res.status(200).json({ success: true });
+        }
+        docs.forEach(function(doc){
+            doc.app_status = 1;
+            doc.save(function(err) {});
         });
-    });
+        return res.status(200).json({ success: true });
+    }));
 
-    app.post('/user/:user/offline',function(req, res, next) {
+    app.post('/user/:user/offline', wrap(function* (req, res, next) {
         var userID = req.params.user;
-        Device.find({ userID: userID }, function(err, docs) {
-            if(err) return next(err);
-
-            var count = docs.length;
-            if(count == 0) {
-                return res.status(200).json({ success: true });
-            }
-            docs.forEach(function(doc){
-                doc.app_status = 0;
-                doc.save(function(err) {
-                    if(err) return next(err);
-
-                    count--;
-                    if(count == 0) {
-                        return res.status(200).json({ success: true });
-                    }
-                });
-            });
+        var docs = yield Device.find({ userID: userID });
+        if(docs == null || docs.length == 0) {
+            return res.status(200).json({ success: true });
+        }
+        docs.forEach(function(doc){
+            doc.app_status = 0;
+            doc.save(function(err) {});
         });
-    });
+        return res.status(200).json({ success: true });
+    }));
 
     app.post('/user/:user/change_psw', function(req, res, next) {
         var userID = req.params.user;
@@ -354,4 +289,118 @@ module.exports = function (app, mongoose, config) {
             });
         });
     });
+
+/*
+    app.post('/user/login',function(req, res, next) {
+        var username = req.body.username;
+        var password = common.md5(req.body.password);
+        User.findOne({username: username, password: password}, function(err, user) {
+            if(err) return next(err);
+
+            Device.find({ userID: user._id }, function(err, docs) {
+                if(err) return next(err);
+
+                var count = docs.length;
+                docs.forEach(function(doc){
+                    doc.app_status = 1;
+                    doc.app_last_updated = Date.now();
+                    doc.save(function(err) {
+                        if(err) return next(err);
+
+                        count--;
+                        if(count == 0) {
+                            return res.status(200).json({
+                                success:true,
+                                user: user
+                            });
+                        }
+                    });
+                });
+            });
+        });
+    });
+
+    app.get('/user/:user/get_device',function(req, res, next) {
+        var userID = req.params.user;
+        Device.find({ userID: userID }).select('mac name type status last_updated').sort({type:-1}).lean().exec(function(err, docs) {
+            if(err) return next(err);
+
+            var count = docs.length;
+            if(count == 0) {
+                return res.status(200).json([]);
+            }
+            docs.forEach(function(doc){
+                var mac = doc.mac;
+                var last_updated = doc.last_updated;
+                if(last_updated == null || Date.now() - last_updated >= 60000) {
+                    doc.status = 0;
+                }
+
+                Data.findOne({
+                    mac: mac,
+                    day: moment().format('YYYYMMDD')
+                }).select('x1 x3 x9 x10 x11 x12 x13 x14 p1 p2 p3 p4 fei created -_id').sort({'created': -1}).limit(1).lean().exec(function(err, data) {
+                    if(err) return next(err);
+
+                    count--;
+                    if(data != null) {
+                        delete data['_id'];
+                        delete data['mac'];
+                    }
+                    doc.data = data;
+                    if(count == 0) {
+                        return res.status(200).json(docs == null || docs.length < 1 ? [] : docs);
+                    }
+                });
+            });
+        });
+    });
+
+    app.post('/user/:user/online',function(req, res, next) {
+        var userID = req.params.user;
+        Device.find({ userID: userID }, function(err, docs) {
+            if(err) return next(err);
+
+            var count = docs.length;
+            if(count == 0) {
+                return res.status(200).json({ success: true });
+            }
+            docs.forEach(function(doc){
+                doc.app_status = 1;
+                doc.app_last_updated = Date.now();
+                doc.save(function(err) {
+                    if(err) return next(err);
+
+                    count--;
+                    if(count == 0) {
+                        return res.status(200).json({ success: true });
+                    }
+                });
+            });
+        });
+    });
+
+    app.post('/user/:user/offline',function(req, res, next) {
+        var userID = req.params.user;
+        Device.find({ userID: userID }, function(err, docs) {
+            if(err) return next(err);
+
+            var count = docs.length;
+            if(count == 0) {
+                return res.status(200).json({ success: true });
+            }
+            docs.forEach(function(doc){
+                doc.app_status = 0;
+                doc.save(function(err) {
+                    if(err) return next(err);
+
+                    count--;
+                    if(count == 0) {
+                        return res.status(200).json({ success: true });
+                    }
+                });
+            });
+        });
+    });
+ */
 };

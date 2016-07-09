@@ -18,6 +18,8 @@
     "random-js": "~1.0.8",
     "xml": "~1.0.1",
     "request": "~2.72.0",
-    "debug": "~2.2.0"
+    "debug": "~2.2.0",
+    "express-promise": "~0.4.0",
+    "co-express": "~1.2.1"
   }
 }
