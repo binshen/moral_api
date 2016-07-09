@@ -75,7 +75,7 @@ module.exports = function (app, mongoose, config) {
         var mac = req.params.mac;
         DeviceTest.findOne({ mac: mac }).sort({ created: -1 }).exec(function(err, doc) {
             if(err) return next(err);
-            return res.status(200).json(doc);
+            return res.status(200).json(doc == null ? {} : doc);
         });
     });
 
@@ -83,7 +83,7 @@ module.exports = function (app, mongoose, config) {
         var mac = req.params.mac;
         DeviceRank.findOne({ mac: mac }).sort({ created: -1 }).exec(function(err, doc) {
             if(err) return next(err);
-            return res.status(200).json(doc);
+            return res.status(200).json(doc == null ? {} : doc);
         });
     });
 };
