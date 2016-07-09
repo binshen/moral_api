@@ -8,6 +8,8 @@ var Common = require('../utils/common');
 module.exports = function (app, mongoose, config) {
     var Data = mongoose.model('Data');
     var Device = mongoose.model('Device');
+    var DeviceTest = mongoose.model('DeviceTest');
+    var DeviceRank = mongoose.model('DeviceRank');
 
     app.get('/device/mac/:mac/get',function(req, res, next) {
         var mac = req.params.mac;
@@ -66,6 +68,22 @@ module.exports = function (app, mongoose, config) {
         ]).exec(function(err, docs) {
             if(err) return next(err);
             return res.status(200).json(docs == null || docs.length < 1 ? {} : docs[0]);
+        });
+    });
+
+    app.get('/device/mac/:mac/get_test',function(req, res, next) {
+        var mac = req.params.mac;
+        DeviceTest.findOne({ mac: mac }.sort({ created: -1 }), function(err, doc) {
+            if(err) return next(err);
+            return res.status(200).json(doc);
+        });
+    });
+
+    app.get('/device/mac/:mac/get_rank',function(req, res, next) {
+        var mac = req.params.mac;
+        DeviceRank.findOne({ mac: mac }.sort({ created: -1 }), function(err, doc) {
+            if(err) return next(err);
+            return res.status(200).json(doc);
         });
     });
 };
