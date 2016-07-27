@@ -157,6 +157,7 @@ module.exports = function (app, mongoose, config) {
         }
         docs.forEach(function(doc){
             doc.app_status = 1;
+            doc.app_last_updated = Date.now();
             doc.save(function(err) {});
         });
         return res.status(200).json({ success: true });
