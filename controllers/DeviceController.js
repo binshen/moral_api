@@ -33,6 +33,7 @@ module.exports = function (app, mongoose, config) {
     //     });
     // });
 
+/*
     app.get('/device/mac/:mac/get_history2',function(req, res, next) {
         var mac = req.params.mac;
         var day = req.query.day;
@@ -44,6 +45,7 @@ module.exports = function (app, mongoose, config) {
             return res.status(200).json(doc == null ? {} : doc);
         });
     });
+*/
 
     app.get('/device/mac/:mac/get_history',function(req, res, next) {
         var mac = req.params.mac;

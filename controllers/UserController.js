@@ -77,6 +77,10 @@ module.exports = function (app, mongoose, config) {
             if(data != null) {
                 delete data['_id'];
                 delete data['mac'];
+                var x9 = parseFloat(data['x9']);
+                if(x9 > 0) {
+                    data['x9'] = Math.round(x9 * 100) / 100;
+                }
             }
             doc.data = data;
         });
