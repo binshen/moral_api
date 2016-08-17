@@ -281,7 +281,7 @@ module.exports = function (app, mongoose, config) {
                     return res.status(200).json({ success:false, error:"您发送的验证码不正确" });
                 } else {
                     var created = auth.created;
-                    if(Date.now() - created > 1000 * 60) {
+                    if(Date.now() - created > 1800000) {
                         return res.status(200).json({ success:false, error:"您发送的验证码已过期" });
                     } else {
                         doc.password = new_password;
