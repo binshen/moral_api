@@ -212,7 +212,7 @@ module.exports = function (app, mongoose, config) {
         Auth.findOne({ tel: tel }, function(err, doc) {
             if (err) return next(err);
             var code = random.integer(100000, 999999);
-            var msg = "测试短信认证：您的验证码是：" + code;
+            var msg = "您的验证码是：" + code;
             if(doc == null) {
                 doc = new Auth({ tel: tel, code: code, created: Date.now() });
                 doc.save(function(err) {
@@ -222,7 +222,7 @@ module.exports = function (app, mongoose, config) {
                 });
             } else {
                 var created = doc.created;
-                if(Date.now() - created > 1000 * 60) {
+                if(Date.now() - created > 1800000) {
                     doc.code = code;
                     doc.created = Date.now();
                     doc.save(function(err) {
@@ -231,7 +231,7 @@ module.exports = function (app, mongoose, config) {
                         return res.status(200).json({ success:true });
                     });
                 } else {
-                    return res.status(200).json({ success:true });
+                    return res.status(200).json({ success:false, error:"验证码未过期,请勿频繁请求验证码" });
                 }
             }
         });
