@@ -91,6 +91,14 @@ module.exports = function (app, mongoose, config) {
 
     app.get('/device/mac/:mac/get_data',function(req, res, next) {
         var mac = req.params.mac;
+        var data = Data.findOne({ mac: mac, day: moment().format('YYYYMMDD') }).select('x1 x2 x3 x9 x10 x11 created -_id').sort({'created': -1}).exec(function(err, doc) {
+            if(err) return next(err);
+            return res.status(200).json(doc == null ? {} : doc);
+        });
+    });
+
+    app.get('/device/mac/:mac/get_data2',function(req, res, next) {
+        var mac = req.params.mac;
         var data = Data.findOne({ mac: mac }).select('x1 x2 x3 x9 x10 x11 created -_id').sort({'created': -1}).exec(function(err, doc) {
             if(err) return next(err);
             return res.status(200).json(doc == null ? {} : doc);
