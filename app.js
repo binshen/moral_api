@@ -14,9 +14,14 @@ var path = require('path');
 var fs = require('fs');
 var requireDir = require('require-dir');
 var expressPromise = require('express-promise');
+var cors = require('express-cors');
 
 var app = express();
 app.set("port", config.api.port);
+app.use(cors({
+    allowedOrigins: [ '*' ]
+}));
+
 
 // var logDirectory = path.join(__dirname, 'log');
 // fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
