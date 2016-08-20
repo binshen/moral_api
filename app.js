@@ -14,13 +14,19 @@ var path = require('path');
 var fs = require('fs');
 var requireDir = require('require-dir');
 var expressPromise = require('express-promise');
-var cors = require('express-cors');
 
 var app = express();
 app.set("port", config.api.port);
-app.use(cors({
-    allowedOrigins: [ '*' ]
-}));
+
+app.all('*', function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+    res.header("X-Powered-By",' 3.2.1')
+    res.header("Content-Type", "application/json;charset=utf-8");
+    next();
+});
+
 
 
 // var logDirectory = path.join(__dirname, 'log');
