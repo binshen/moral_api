@@ -246,7 +246,7 @@ module.exports = function (app, mongoose, config) {
             if(doc != null) {
                 return res.status(200).json({ success:false, error:"您输入的手机号码已经注册过" });
             }
-            Auth.findOne({ tel: username }, function(err, auth) {
+            Auth.findOne({ tel: username, code: code }, function(err, auth) {
                 if(err) return next(err);
                 if(auth == null) {
                     return res.status(200).json({ success:false, error:"您发送的验证码不正确" });
@@ -275,7 +275,7 @@ module.exports = function (app, mongoose, config) {
             if(doc == null) {
                 return res.status(200).json({ success:false, error:"您输入的手机号码不存在" });
             }
-            Auth.findOne({ tel: username }, function(err, auth) {
+            Auth.findOne({ tel: username, code: code }, function(err, auth) {
                 if(err) return next(err);
                 if(auth == null) {
                     return res.status(200).json({ success:false, error:"您发送的验证码不正确" });
