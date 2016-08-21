@@ -108,7 +108,7 @@ module.exports = function (app, mongoose, config) {
         User.findOne({ _id: userID }, function(err, doc) {
             if(err) return next(err);
             if(doc == null) {
-                return res.status(200).json({ success:false, error:"指定的设备不存在" });
+                return res.status(200).json({ success:false, error:"该用户不存在" });
             }
             doc.nickname = userName;
             doc.save(function(err) {
