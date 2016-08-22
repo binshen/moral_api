@@ -4,6 +4,7 @@
 
 var moment = require('moment');
 var Common = require('../utils/common');
+var request = require('request');
 
 module.exports = function (app, mongoose, config) {
     var Data = mongoose.model('Data');
@@ -94,6 +95,14 @@ module.exports = function (app, mongoose, config) {
         var data = Data.findOne({ mac: mac, day: moment().format('YYYYMMDD') }).select('x1 x2 x3 x9 x10 x11 created -_id').sort({'created': -1}).exec(function(err, doc) {
             if(err) return next(err);
             return res.status(200).json(doc == null ? {} : doc);
+        });
+    });
+
+    app.get('/device/code/:code/get_weather',function(req, res, next) {
+        var code = req.params.code;
+        request('http://mobile.weather.com.cn/data/sk/' + code + '.html', function (err, resp, body) {
+            if(err) return next(err);
+            return res.status(200).json(body == null ? {} : body);
         });
     });
 
