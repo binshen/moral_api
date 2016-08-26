@@ -33,6 +33,9 @@ module.exports = function (app, mongoose, config) {
 
     app.post('/user/add_device', function(req, res, next) {
         var userID = req.body.userID;
+        if(userID == null) {
+            return res.status(200).json({ success:false, error: "用户信息丢失,请重新登录" });
+        }
         var mac = req.body.mac;
         if(mac == null) {
             return res.status(200).json({ success:false, error: "Mac地址不能为空" });
@@ -58,7 +61,7 @@ module.exports = function (app, mongoose, config) {
                         return res.status(200).json({ success:true, status: 2 });
                     });
                 } else {
-                    return res.status(200).json({ success:true, status: 3 });
+                    return res.status(200).json({ success:true, status: 4 });
                 }
             }
         });
