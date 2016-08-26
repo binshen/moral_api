@@ -69,6 +69,9 @@ module.exports = function (app, mongoose, config) {
 
     app.get('/user/:user/get_device', wrap(function* (req, res, next) {
         var userID = req.params.user;
+        if(userID == null) {
+            return res.status(200).json([]);
+        }
         var docs = yield Device.find({ userID: userID }).select('mac name type status last_updated').sort({type:-1}).lean().exec();
         docs.forEach(function(doc){
             var mac = doc.mac;
