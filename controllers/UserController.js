@@ -50,7 +50,7 @@ module.exports = function (app, mongoose, config) {
                     return res.status(200).json({ success:true, status: 1 });
                 });
             } else {
-                if(doc.userID == null) {
+                if(doc.userID == undefined || doc.userID == null) {
                     doc.userID = userID;
                     doc.status = 1;
                     doc.last_updated = Date.now();
