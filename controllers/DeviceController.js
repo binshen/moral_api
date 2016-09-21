@@ -101,7 +101,7 @@ module.exports = function (app, mongoose, config) {
     app.get('/device/code/:code/get_weather',function(req, res, next) {
         var code = req.params.code;
         //var url = 'http://mobile.weather.com.cn/data/sk/' + code + '.html';
-        var url = 'http://www.weather.com.cn/data/sk' + code + '.html';
+        var url = 'http://www.weather.com.cn/data/sk/' + code + '.html';
         request(url, function (err, resp, body) {
             if(err) return next(err);
             return res.status(200).json(body == null ? {} : body);
