@@ -121,6 +121,7 @@ module.exports = function (app, mongoose, config) {
                 var json_data = JSON.parse(body);
                 var temp_data = JSON.parse(body1);
                 console.log(temp_data);
+                json_data["sk_info"] = {}
                 json_data["sk_info"]["temp"] = temp_data["sk_info"]["temp"];
                 json_data["weatherinfo"]["temp"] = json_data["weatherinfo"]["temp"] + "℃";
 
