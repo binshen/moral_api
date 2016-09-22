@@ -99,12 +99,33 @@ module.exports = function (app, mongoose, config) {
     });
 
     app.get('/device/code/:code/get_weather',function(req, res, next) {
+        // var code = req.params.code;
+        // //var url = 'http://mobile.weather.com.cn/data/sk/' + code + '.html';
+        // var url = 'http://www.weather.com.cn/data/sk/' + code + '.html';
+        // request(url, function (err, resp, body) {
+        //     if(err) return next(err);
+        //     return res.status(200).json(body == null ? {} : body);
+        // });
+
+
         var code = req.params.code;
         //var url = 'http://mobile.weather.com.cn/data/sk/' + code + '.html';
         var url = 'http://www.weather.com.cn/data/sk/' + code + '.html';
         request(url, function (err, resp, body) {
             if(err) return next(err);
-            return res.status(200).json(body == null ? {} : body);
+
+            var url1 = 'http://mobile.weather.com.cn/data/sk/' + code + '.html';
+            request(url1, function (err1, resp1, body1) {
+                if(err1) return res.status(200).json(body == null ? {} : body);
+
+                var json_data = JSON.parse(body);
+                var temp_data = JSON.parse(body1);
+                console.log(temp_data);
+                json_data["sk_info"] = temp_data["sk_info"]["temp"];
+                json_data["weatherinfo"]["temp"] = json_data["weatherinfo"]["temp"] + "℃";
+
+                return res.status(200).json(JSON.stringify(json_data));
+            });
         });
     });
 
