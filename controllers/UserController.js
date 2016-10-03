@@ -108,6 +108,25 @@ module.exports = function (app, mongoose, config) {
         });
     });
 
+    app.get('/user/:user/get_avg_data', function(req, res, next) {
+        var userID = req.params.user;
+        Device.find({ userID: userID }).select('mac -_id').sort({type:-1}).exec(function(err, docs) {
+            var count = 0;
+            var total_val = 0;
+            docs.forEach(function(doc){
+                Data.findOne({ mac: doc.mac, day: moment().format('YYYYMMDD') }).select('aqi').sort({'created': -1}).lean().exec(function(err, data) {
+                    count++;
+                    if(err == null && data != null) {
+                        total_val += data.aqi;
+                    }
+                    if(count >= docs.length) {
+                        return res.status(200).json({ "avg": count == 0 ? 0 : total_val/count });
+                    }
+                });
+            });
+        });
+    });
+
     app.post('/user/:user/update_name',function(req, res, next) {
         var userID = req.params.user;
         var userName = req.body.nickname;
