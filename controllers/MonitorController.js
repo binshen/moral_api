@@ -15,7 +15,7 @@ var data = {
 
 module.exports = function (app, mongoose, config) {
 
-    app.get('monitor/location/:loc/level/:lvl',function(req, res, next) {
+    app.get('/monitor/location/:loc/level/:lvl',function(req, res, next) {
         var loc = req.params.loc;
         var lvl = parseInt(req.params.lvl);
         amqp.connect(uri, function(err, conn) {
