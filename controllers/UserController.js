@@ -14,6 +14,7 @@ module.exports = function (app, mongoose, config) {
     var Data = mongoose.model('Data');
     var Device = mongoose.model('Device');
     var Feedback = mongoose.model('Feedback');
+    var DeviceType = mongoose.model('DeviceType');
 
     app.post('/user/login',function(req, res, next) {
         var username = req.body.username;
@@ -31,7 +32,7 @@ module.exports = function (app, mongoose, config) {
         return res.status(200).json({ success:true });
     });
 
-    app.post('/user/add_device', function(req, res, next) {
+    app.post('/user/add_device', wrap(function* (req, res, next) {
         var userID = req.body.userID;
         if(userID == null) {
             return res.status(200).json({ success:false, error: "用户信息丢失,请重新登录" });
@@ -41,31 +42,37 @@ module.exports = function (app, mongoose, config) {
             return res.status(200).json({ success:false, error: "Mac地址不能为空" });
         }
         mac = mac.toLowerCase();
-        Device.findOne({ mac: mac }, function(err, doc) {
-            if(err) return next(err);
-            if(doc == null) {
-                doc = new Device({ mac: mac, userID: userID, status: 1, last_updated: Date.now(), app_status: 1, app_last_updated: Date.now() });
+        var type = 0;
+        var deviceType = yield DeviceType.findOne({ mac: mac }).exec();
+        if(deviceType != null) {
+            type = deviceType.type;
+        }
+        var doc = yield Device.findOne({ mac: mac }).exec();
+        if(doc == null) {
+            if(type == 0) {
+                return res.status(200).json({ success:false, error: "请先绑定一台环境数主机" });
+            }
+            doc = new Device({ mac: mac, userID: userID, status: 1, last_updated: Date.now(), app_status: 1, app_last_updated: Date.now() });
+            doc.save(function(err) {
+                if(err) return next(err);
+                return res.status(200).json({ success:true, status: 1 });
+            });
+        } else {
+            if(doc.userID == undefined || doc.userID == null) {
+                doc.userID = userID;
+                doc.status = 1;
+                doc.last_updated = Date.now();
+                doc.app_status = 1;
+                doc.app_last_updated = Date.now();
                 doc.save(function(err) {
                     if(err) return next(err);
-                    return res.status(200).json({ success:true, status: 1 });
+                    return res.status(200).json({ success:true, status: 2 });
                 });
             } else {
-                if(doc.userID == undefined || doc.userID == null) {
-                    doc.userID = userID;
-                    doc.status = 1;
-                    doc.last_updated = Date.now();
-                    doc.app_status = 1;
-                    doc.app_last_updated = Date.now();
-                    doc.save(function(err) {
-                        if(err) return next(err);
-                        return res.status(200).json({ success:true, status: 2 });
-                    });
-                } else {
-                    return res.status(200).json({ success:true, status: 4 });
-                }
+                return res.status(200).json({ success:true, status: 4 });
             }
-        });
-    });
+        }
+    }));
 
     app.get('/user/:user/get_device', wrap(function* (req, res, next) {
         var userID = req.params.user;
@@ -321,6 +328,42 @@ module.exports = function (app, mongoose, config) {
     });
 
 /*
+    app.post('/user/add_device', function(req, res, next) {
+        var userID = req.body.userID;
+        if(userID == null) {
+            return res.status(200).json({ success:false, error: "用户信息丢失,请重新登录" });
+        }
+        var mac = req.body.mac;
+        if(mac == null) {
+            return res.status(200).json({ success:false, error: "Mac地址不能为空" });
+        }
+        mac = mac.toLowerCase();
+        Device.findOne({ mac: mac }, function(err, doc) {
+            if(err) return next(err);
+            if(doc == null) {
+                doc = new Device({ mac: mac, userID: userID, status: 1, last_updated: Date.now(), app_status: 1, app_last_updated: Date.now() });
+                doc.save(function(err) {
+                    if(err) return next(err);
+                    return res.status(200).json({ success:true, status: 1 });
+                });
+            } else {
+                if(doc.userID == undefined || doc.userID == null) {
+                    doc.userID = userID;
+                    doc.status = 1;
+                    doc.last_updated = Date.now();
+                    doc.app_status = 1;
+                    doc.app_last_updated = Date.now();
+                    doc.save(function(err) {
+                        if(err) return next(err);
+                        return res.status(200).json({ success:true, status: 2 });
+                    });
+                } else {
+                    return res.status(200).json({ success:true, status: 4 });
+                }
+            }
+        });
+    });
+
     app.post('/user/login',function(req, res, next) {
         var username = req.body.username;
         var password = common.md5(req.body.password);
