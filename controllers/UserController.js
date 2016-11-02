@@ -47,11 +47,16 @@ module.exports = function (app, mongoose, config) {
         if(deviceType != null) {
             type = deviceType.type;
         }
-        var doc = yield Device.findOne({ mac: mac }).exec();
-        if(doc == null) {
-            if(type == 0) {
+
+        if(type < 1) {
+            var device = yield Device.findOne({ userID: userID, type: 1 }).exec();
+            if(device == null) {
                 return res.status(200).json({ success:false, error: "请先绑定一台环境数主机" });
             }
+        }
+
+        var doc = yield Device.findOne({ mac: mac }).exec();
+        if(doc == null) {
             doc = new Device({ mac: mac, userID: userID, status: 1, last_updated: Date.now(), app_status: 1, app_last_updated: Date.now() });
             doc.save(function(err) {
                 if(err) return next(err);
