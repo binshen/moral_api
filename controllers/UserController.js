@@ -311,6 +311,9 @@ module.exports = function (app, mongoose, config) {
 
     app.post('/user/request_code', function(req, res, next) {
         var tel = req.body.tel;
+        if(tel == null || tel == "") {
+            return res.status(200).json({ success:false, error:"系统错误，请重试" });
+        }
         Auth.findOne({ tel: tel }, function(err, doc) {
             if (err) return next(err);
             var code = random.integer(100000, 999999);
