@@ -34,8 +34,11 @@
 //
 // http.request(options, callback).end();
 
-// var common = require('./utils/common');
-// common.sendMsg("18118438026", "测试短信认证：您的验证码是：123456.", function(err, doc) {});
+// var a = '{"sk_info":{"date":"20131012","cityName":"北京","areaID":"101010100","temp":"21℃","tempF":"69.8℉","wd":"东风","ws":"3级","sd":"39%","time":"15:10","sm":"暂无实况"}}';
+// console.log(JSON.parse(a))
 
-var a = '{"sk_info":{"date":"20131012","cityName":"北京","areaID":"101010100","temp":"21℃","tempF":"69.8℉","wd":"东风","ws":"3级","sd":"39%","time":"15:10","sm":"暂无实况"}}';
-console.log(JSON.parse(a))
+// var random = require("random-js")();
+// var code = random.integer(100000, 999999);
+// var msg = "【七星博士】您的验证码是：" + code;
+// var common = require('./utils/common');
+// common.sendMsg("18118438026", msg, function(err, doc) {});
