@@ -126,6 +126,7 @@ module.exports = function (app, mongoose, config) {
             var count = 0;
             var total_val = 0;
             docs.forEach(function(doc){
+                /*
                 Data.findOne({ mac: doc.mac, day: moment().format('YYYYMMDD') }).select('aqi').sort({'created': -1}).lean().exec(function(err, data) {
                     count++;
                     if(err == null && data != null) {
@@ -135,6 +136,70 @@ module.exports = function (app, mongoose, config) {
                         return res.status(200).json({ "avg": count == 0 ? 0 : total_val/count });
                     }
                 });
+                */
+
+                var v1 = v2 = v3 = v4 = v5 = v6 = 0;
+                var z1 = z2 = z3 = z4 = z5 = z6 = 0;
+                Data.findOne({ mac: doc.mac, day: moment().format('YYYYMMDD') }).select('x1 x9 x10 x11 x14 -_id').sort({'created': -1}).lean().exec(function(err, data) {
+                    if(data.x1 != null && v1 < data.x1) v1 = data.x1;
+                    if(data.x9 != null && v3 < data.x9) v3 = data.x9;
+                    if(data.x11 != null && v4 < data.x11) v4 = data.x11;
+                    if(data.x10 != null && v5 < data.x10) v5 = data.x10;
+                    if(data.x14 != null && v6 < data.x14) v6 = data.x14;
+                });
+                //PM2.5
+                if(v1 < 15) z1 = 0.00;
+                else if (v1 >= 15 && v1 < 25) z1 = 0.05;
+                else if (v1 >= 25 && v1 < 35) z1 = 0.10;
+                else if (v1 >= 35 && v1 < 75) z1 = 0.25;
+                else if (v1 >= 75 && v1 < 115) z1 = 0.50;
+                else if (v1 >= 115 && v1 < 150) z1 = 0.75;
+                else if (v1 >= 150 && v1 < 250) z1 = 1.10;
+                else if (v1 >= 250) z1 = 2.00;
+                //颗粒物
+                z2 = 0;
+                //甲醛
+                if(v3 <= 1) z3 = 0.00;
+                else if (v3 > 1 && v3 <= 2) z3 = 0.10;
+                else if (v3 > 2 && v3 <= 4) z3 = 0.20;
+                else if (v3 > 4 && v3 <= 6) z3 = 0.30;
+                else if (v3 > 6 && v3 <= 8) z3 = 0.35;
+                else if (v3 > 8 && v3 <= 10) z3 = 0.65;
+                else if (v3 > 10 && v3 <= 20) z3 = 0.90;
+                else if (v3 > 20 && v3 <= 30) z3 = 1.00;
+                else if (v3 > 30 && v3 <= 50) z3 = 1.50;
+                else if (v3 > 50) z3 = 2.00;
+                //温度
+                if(v4 <= 0) z4 = 2.00;
+                else if(v4 > 0 && v4 <= 5) z4 = 1.00;
+                else if(v4 > 5 && v4 <= 10) z4 = 0.75;
+                else if(v4 > 10 && v4 <= 14) z4 = 0.50;
+                else if(v4 > 14 && v4 <= 18) z4 = 0.25;
+                else if(v4 > 18 && v4 <= 21) z4 = 0.15;
+                else if(v4 > 21 && v4 <= 22) z4 = 0.10;
+                else if(v4 > 22 && v4 <= 24) z4 = 0.05;
+                else if(v4 > 24 && v4 <= 28) z4 = 0.00;
+                else if(v4 > 28 && v4 <= 34) z4 = 0.25;
+                else if(v4 > 34 && v4 <= 38) z4 = 0.80;
+                else if(v4 > 38) z4 = 2.00;
+                //湿度
+                if(v5 <= 35) z5 = 0.10;
+                else if(v5 > 35 && v5 <= 45) z5 = 0.05;
+                else if(v5 > 45 && v5 <= 65) z5 = 0.00;
+                else if(v5 > 65 && v5 <= 80) z5 = 0.05;
+                else if(v5 > 80) z5 = 0.10;
+                //光照强度
+                if(v6 <= 10) z6 = 0.00;
+                else if(v6 > 10 && v6 <= 20) z6 = 0.01;
+                else if(v6 > 20 && v6 <= 30) z6 = 0.02;
+                else if(v6 > 30 && v6 <= 40) z6 = 0.03;
+                else if(v6 > 40 && v6 <= 50) z6 = 0.04;
+                else if(v6 > 50 && v6 <= 60) z6 = 0.05;
+                else if(v6 > 60 && v6 <= 70) z6 = 0.10;
+                else if(v6 > 70 && v6 <= 80) z6 = 0.11;
+                else if(v6 > 80 && v6 <= 90) z6 = 0.12;
+                else if(v6 > 90) z6 = 0.15;
+                return res.status(200).json({ "avg": parseInt((z1 + z2 + z3 + z4 + z5 + z6) * 100) });
             });
         });
     });
