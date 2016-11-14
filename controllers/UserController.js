@@ -317,12 +317,15 @@ module.exports = function (app, mongoose, config) {
         Auth.findOne({ tel: tel }, function(err, doc) {
             if (err) return next(err);
             var code = random.integer(100000, 999999);
-            var msg = "【七星博士】您的验证码是：" + code;
+            //var msg = "【七星博士】您的验证码是：" + code;
             if(doc == null) {
                 doc = new Auth({ tel: tel, code: code, created: Date.now() });
                 doc.save(function(err) {
                     if(err) return next(err);
-                    common.sendMsg(tel, msg, function() {});
+                    //common.sendMsg(tel, msg, function(err, doc) {});
+                    common.sendMsg2(tel, code, function(err, doc) {
+                        //TODO
+                    });
                     return res.status(200).json({ success:true });
                 });
             } else {
@@ -332,7 +335,10 @@ module.exports = function (app, mongoose, config) {
                     doc.created = Date.now();
                     doc.save(function(err) {
                         if(err) return next(err);
-                        common.sendMsg(tel, msg, function() {});
+                        //common.sendMsg(tel, msg, function(err, doc) {});
+                        common.sendMsg2(tel, code, function(err, doc) {
+                            //TODO
+                        });
                         return res.status(200).json({ success:true });
                     });
                 } else {

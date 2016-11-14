@@ -22,6 +22,7 @@
     "express-promise": "~0.4.0",
     "co-express": "~1.2.1",
     "express-cors": "~0.0.3",
-    "amqplib": "~0.4.2"
+    "amqplib": "~0.4.2",
+    "urllib": ">=0.5.2"
   }
 }

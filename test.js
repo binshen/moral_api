@@ -42,3 +42,13 @@
 // var msg = "【七星博士】您的验证码是：" + code;
 // var common = require('./utils/common');
 // common.sendMsg("18118438026", msg, function(err, doc) {});
+
+
+var random = require("random-js")();
+var code = random.integer(100000, 999999);
+var common = require('./utils/common');
+common.sendMsg2("18118438026", code, function(err, doc) {
+    console.log(err);
+    console.log("+++++++++++++++++++++++++++++++++++++++");
+    console.log(doc);
+});
