@@ -34,7 +34,7 @@ module.exports.sendMsg2 = function(tel, code, callback) {
         'rec_num' : tel ,
         'sms_template_code' : "SMS_25781236"
     }, function(error, response) {
-        if (!error) console.log(response);
-        else console.log(error);
+        if(err) return callback(err);
+        callback(null, body);
     });
 };
