@@ -21,8 +21,8 @@ module.exports.sendMsg = function(tel, msg, callback) {
 
 module.exports.sendMsg2 = function(tel, code, callback) {
     var client = new TopClient({
-        'appkey':'appkey',
-        'appsecret':'appsecret',
+        'appkey':'4272',
+        'appsecret':'0ebbcccfee18d7ad1aebc5b135ffa906',
         'REST_URL':'http://gw.api.taobao.com/router/rest'
     });
 
