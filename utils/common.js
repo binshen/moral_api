@@ -33,7 +33,7 @@ module.exports.sendMsg2 = function(tel, code, callback) {
         'sms_param' : "{code:'" + code + "'}" ,
         'rec_num' : tel ,
         'sms_template_code' : "SMS_25781236"
-    }, function(error, response) {
+    }, function(err, body) {
         if(err) return callback(err);
         callback(null, body);
     });
