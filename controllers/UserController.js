@@ -327,8 +327,11 @@ module.exports = function (app, mongoose, config) {
                         console.log(err);
                         console.log("------------------------------------------------1");
                         console.log(doc);
+                        if(err) {
+                            return res.status(200).json({ success:false, error:"验证码发送失败，请稍后再试" });
+                        }
+                        return res.status(200).json({ success:true });
                     });
-                    return res.status(200).json({ success:true });
                 });
             } else {
                 var created = doc.created;
@@ -342,8 +345,11 @@ module.exports = function (app, mongoose, config) {
                             console.log(err);
                             console.log("------------------------------------------------2");
                             console.log(doc);
+                            if(err) {
+                                return res.status(200).json({ success:false, error:"验证码发送失败，请稍后再试" });
+                            }
+                            return res.status(200).json({ success:true });
                         });
-                        return res.status(200).json({ success:true });
                     });
                 } else {
                     return res.status(200).json({ success:false, error:"验证码未过期,请勿频繁请求验证码" });
