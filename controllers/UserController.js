@@ -324,7 +324,9 @@ module.exports = function (app, mongoose, config) {
                     if(err) return next(err);
                     //common.sendMsg(tel, msg, function(err, doc) {});
                     common.sendMsg2(tel, code, function(err, doc) {
-                        //TODO
+                        console.log(err);
+                        console.log("------------------------------------------------1");
+                        console.log(doc);
                     });
                     return res.status(200).json({ success:true });
                 });
@@ -337,7 +339,9 @@ module.exports = function (app, mongoose, config) {
                         if(err) return next(err);
                         //common.sendMsg(tel, msg, function(err, doc) {});
                         common.sendMsg2(tel, code, function(err, doc) {
-                            //TODO
+                            console.log(err);
+                            console.log("------------------------------------------------2");
+                            console.log(doc);
                         });
                         return res.status(200).json({ success:true });
                     });
