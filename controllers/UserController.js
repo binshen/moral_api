@@ -376,7 +376,7 @@ module.exports = function (app, mongoose, config) {
                     if(Date.now() - created > 1800000) {
                         return res.status(200).json({ success:false, error:"您发送的验证码已过期" });
                     } else {
-                        doc = new User({ username: username, password: password });
+                        doc = new User({ username: username, password: password, nickname: username });
                         doc.save(function(err) {
                             if(err) return next(err);
                             return res.status(200).json({ success:true });
