@@ -32,6 +32,20 @@ module.exports = function (app, mongoose, config) {
         return res.status(200).json({ success:true });
     });
 
+    app.get('/user/:user/get_info',function(req, res, next) {
+        var userID = req.params.user;
+        if(userID == null) {
+            return res.status(200).json([]);
+        }
+        User.findOne({_id: userID}, function(err, doc) {
+            if(err) return next(err);
+            return res.status(200).json({
+                success:true,
+                user: doc
+            });
+        });
+    });
+
     app.post('/user/add_device', wrap(function* (req, res, next) {
         var userID = req.body.userID;
         if(userID == null) {
